@@ -34,6 +34,7 @@ print(X)
 print(y)
 
 # 课后习题
+print('=' * 10)
 data_test = pd.read_csv(data_file)
 # print(data_test)
 # print(data_test.isna())  # 对于dataFrame类型，判断其元素是否为nan，返回一个同格式的dataFrame真值表
