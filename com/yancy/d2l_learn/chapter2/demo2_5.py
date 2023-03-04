@@ -33,7 +33,7 @@ X = torch.linspace(0, 10, 256, requires_grad=True)
 # print(X)  # 自动微分状态视为变量
 # print(X.detach())  # 普通tensor
 # print(torch.ones_like(X)) #backward传入的全1向量X1,传入后进行dot(Y,X1)运算，即全元素求和，结果是标量才能计算梯度
-# 可理解为求梯度时各元素的权重，可以默认全为1，也可以有侧重
+# 可理解为求梯度时各元素的权重，可以设置全为1，也可以有侧重
 # https://zhuanlan.zhihu.com/p/83172023
 Y = torch.sin(X)
 Y.backward(torch.ones_like(X))  # 传入梯度权重系数gradient
