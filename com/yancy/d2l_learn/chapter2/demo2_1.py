@@ -51,3 +51,8 @@ print(x == y)
 print(x < y)
 
 "索引同python"
+# 如tensor[a:b]为0轴索引是a，1轴索引是b
+# 同时a还可为数组类，即同时索引0轴的多个值
+A = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+print(A[torch.tensor([0, 1])])
+print(A[[0, 2]])
