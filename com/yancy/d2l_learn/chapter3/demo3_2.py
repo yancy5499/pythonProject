@@ -43,9 +43,9 @@ def data_iter(batch_size, features, labels):
 batch_size = 10
 for X, y in data_iter(batch_size, features, labels):
     print(X, '\n', y)
-# 复习,tensor的索引可以写全tensor[a:b:c],其中abc分别为0，1，2轴，也可以只写部分，默认从0数
-# 如tensor[a:b]为0轴索引是a，1轴索引是b
-# 同时a还可为数组类，即同时索引0轴的多个值
+# 复习,tensor的索引可以写全tensor[a,b,c],其中abc分别为0，1，2轴，也可以只写部分，默认从0数
+# 如tensor[a,b]为0轴索引是a，1轴索引是b
+# a可为切片a1：a2，同时还可为数组类，即同时索引0轴的多个值
 # A = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 # print(A[torch.tensor([0, 1])])
 # print(A[[0, 2]])
