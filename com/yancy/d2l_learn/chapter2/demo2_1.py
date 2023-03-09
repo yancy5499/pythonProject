@@ -53,7 +53,13 @@ print(x < y)
 "索引同python"
 # tensor的索引可以写全tensor[a,b,c],其中abc分别为0，1，2轴，也可以只写部分，默认从0数
 # 如tensor[a,b]为0轴索引是a，1轴索引是b
-# a可以为切片a1:a2,同时还可为数组类，即同时索引0轴的多个值
+# a可以为切片a1:a2
+# 同时还可为数组类，叫做广播机制,输入[a,b],[c,d]，相当于分别输入a,c和b,d
+# 输入[a,b],c，相当于分别输入a,c和b,c
+print('=' * 10)
 A = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-print(A[torch.tensor([0, 1])])
-print(A[[0, 2]])
+print(A[torch.tensor([0, 1])])  # 可以用tensor作为索引，同列表[0,1]
+print(A[0, 2])  # (0,2)元素
+print(A[[0, 2]])  # 相当于A[a,None],a=[0,2],输出0行和2行
+print(A[[0, 2], [1, 2]])  # (0,2)元素和(1,2)元素
+print(A[[0, 2], 1])
