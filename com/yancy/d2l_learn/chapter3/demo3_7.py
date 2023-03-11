@@ -1,9 +1,8 @@
 import numpy as np
 import torch
-import numpy
+import torchvision
 from torch import nn
 from torch.utils import data
-import torchvision
 from torchvision import transforms
 import matplotlib.pyplot as plt
 
@@ -49,6 +48,8 @@ def evaluate_accuracy(net, data_iter):
     # metric=[0.0,0.0]
     with torch.no_grad():
         for X, y in data_iter:
+            if try_gpu() != torch.device('cpu'):
+                X, y = X.to('cuda:0'), y.to('cuda:0')
             metric.add(accuracy(net(X), y), y.numel())
             # metric = [0.0+acc, 0.0+ynum]
     return metric[0] / metric[1]
@@ -76,6 +77,8 @@ def train_epoch(net, train_iter, loss, updater):
         net.train()  # 训练模式
     metric = Accumulator(3)
     for X, y in train_iter:
+        if try_gpu() != torch.device('cpu'):
+            X, y = X.to('cuda:0'), y.to('cuda:0')
         y_hat = net(X)
         l = loss(y_hat, y)
         if isinstance(updater, torch.optim.Optimizer):
@@ -106,7 +109,7 @@ def train(net, train_iter, test_iter, loss, num_epochs, updater):
         # =====画图相关=====
         my_plot.add_y(train_loss, train_acc, test_acc)
         # =====画图相关=====
-        print('epoch{}>>train_loss:{}  train_acc:{}  test_acc:{}\n'.format(epoch + 1, train_loss, train_acc, test_acc))
+        print('epoch{}>>train_loss:{:.4f}  train_acc:{:.4f}  test_acc:{:.4f}\n'.format(epoch + 1, train_loss, train_acc, test_acc))
     train_loss, train_acc = train_metrics
     # =====画图开始=====
     my_plot.show(labels=['train_loss', 'train_acc', 'test_acc'])
@@ -114,7 +117,7 @@ def train(net, train_iter, test_iter, loss, num_epochs, updater):
     assert train_loss < 0.5
     assert 1 >= train_acc > 0.7
     assert 1 >= test_acc > 0.7
-    print('over>>train_loss:{}\ntrain_acc:{}\ntest_acc:{}'.format(train_loss, train_loss, test_acc))
+    print('over>>train_loss:{:.4f}\ntrain_acc:{:.4f}\ntest_acc:{:.4f}'.format(train_loss, train_loss, test_acc))
 
 
 class MyPlot:
@@ -141,14 +144,23 @@ class MyPlot:
         plt.show()
 
 
+def try_gpu(i=0):
+    """如果存在gpu，返回gpu(i)，否则返回cpu()"""
+    # if torch.cuda.device_count() >= i + 1:
+    #     return torch.device('cuda:{}'.format(i))
+    return torch.device('cpu')
+
+
 if __name__ == '__main__':
     batch_size = 256
     learning_rate = 0.1
     train_iter, test_iter = load_data_fashion_mnist(batch_size)
     net = nn.Sequential(nn.Flatten(),  # 该层用于将输入的图片摊平成一个向量，再到第二层作为输入
                         nn.Linear(28 * 28, 10))  # 输入28*28的向量，输出长度为10的向量
+    net.to(device=try_gpu())
     # d2l教程p144，重新审视softmax的实现，注意数据的上溢和下溢
     loss = nn.CrossEntropyLoss(reduction='none')
     trainer = torch.optim.SGD(net.parameters(), lr=learning_rate)
     num_epochs = 10
+
     train(net, train_iter, test_iter, loss, num_epochs, trainer)
