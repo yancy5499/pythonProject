@@ -40,7 +40,7 @@ def accuracy(y_hat, y):
     return float(cmp.sum())
 
 
-def evaluate_accuracy(net, data_iter):
+def evaluate_accuracy(net, data_iter, device):
     """计算在指定数据集上的模型精度"""
     if isinstance(net, torch.nn.Module):
         net.eval()  # 评估模式
@@ -48,7 +48,7 @@ def evaluate_accuracy(net, data_iter):
     # metric=[0.0,0.0]
     with torch.no_grad():
         for X, y in data_iter:
-            if try_gpu() != torch.device('cpu'):
+            if device != torch.device('cpu'):
                 X, y = X.to('cuda:0'), y.to('cuda:0')
             metric.add(accuracy(net(X), y), y.numel())
             # metric = [0.0+acc, 0.0+ynum]
@@ -71,13 +71,13 @@ class Accumulator:
         return self.data[idx]
 
 
-def train_epoch(net, train_iter, loss, updater):
+def train_epoch(net, train_iter, loss, updater, device):
     """训练模型一个epoch"""
     if isinstance(net, torch.nn.Module):
         net.train()  # 训练模式
     metric = Accumulator(3)
     for X, y in train_iter:
-        if try_gpu() != torch.device('cpu'):
+        if device != torch.device('cpu'):
             X, y = X.to('cuda:0'), y.to('cuda:0')
         y_hat = net(X)
         l = loss(y_hat, y)
@@ -95,7 +95,7 @@ def train_epoch(net, train_iter, loss, updater):
     return metric[0] / metric[2], metric[1] / metric[2]
 
 
-def train(net, train_iter, test_iter, loss, num_epochs, updater):
+def train(net, train_iter, test_iter, loss, num_epochs, updater, device=torch.device('cpu')):
     # =====画图相关=====
     fig = plt.figure()
     x_values = np.linspace(1, num_epochs + 1, num_epochs)
@@ -103,13 +103,14 @@ def train(net, train_iter, test_iter, loss, num_epochs, updater):
     # =====画图相关=====
     """训练模型"""
     for epoch in range(num_epochs):
-        train_metrics = train_epoch(net, train_iter, loss, updater)
-        test_acc = evaluate_accuracy(net, test_iter)
+        train_metrics = train_epoch(net, train_iter, loss, updater, device)
+        test_acc = evaluate_accuracy(net, test_iter, device)
         train_loss, train_acc = train_metrics
         # =====画图相关=====
         my_plot.add_y(train_loss, train_acc, test_acc)
         # =====画图相关=====
-        print('epoch{}>>train_loss:{:.4f}  train_acc:{:.4f}  test_acc:{:.4f}\n'.format(epoch + 1, train_loss, train_acc, test_acc))
+        print('epoch{}>>train_loss:{:.4f}  train_acc:{:.4f}  test_acc:{:.4f}\n'.format(epoch + 1, train_loss, train_acc,
+                                                                                       test_acc))
     train_loss, train_acc = train_metrics
     # =====画图开始=====
     my_plot.show(labels=['train_loss', 'train_acc', 'test_acc'])
@@ -117,7 +118,7 @@ def train(net, train_iter, test_iter, loss, num_epochs, updater):
     assert train_loss < 0.5
     assert 1 >= train_acc > 0.7
     assert 1 >= test_acc > 0.7
-    print('over>>train_loss:{:.4f}\ntrain_acc:{:.4f}\ntest_acc:{:.4f}'.format(train_loss, train_loss, test_acc))
+    print('over>>train_loss:{:.4f}\ntrain_acc:{:.4f}\ntest_acc:{:.4f}'.format(train_loss, train_acc, test_acc))
 
 
 class MyPlot:
@@ -139,15 +140,18 @@ class MyPlot:
             plt.scatter(self.x_values, self.y_dic[i])
             if type(labels) == list:
                 plt.plot(self.x_values, self.y_dic[i], label=labels[i])
+                plt.legend()
             else:
                 plt.plot(self.x_values, self.y_dic[i])
+        plt.grid()
         plt.show()
 
 
-def try_gpu(i=0):
+def choose_device(i=0, no_gpu=False):
     """如果存在gpu，返回gpu(i)，否则返回cpu()"""
-    # if torch.cuda.device_count() >= i + 1:
-    #     return torch.device('cuda:{}'.format(i))
+    if not no_gpu:
+        if torch.cuda.device_count() >= i + 1:
+            return torch.device('cuda:{}'.format(i))
     return torch.device('cpu')
 
 
@@ -157,10 +161,16 @@ if __name__ == '__main__':
     train_iter, test_iter = load_data_fashion_mnist(batch_size)
     net = nn.Sequential(nn.Flatten(),  # 该层用于将输入的图片摊平成一个向量，再到第二层作为输入
                         nn.Linear(28 * 28, 10))  # 输入28*28的向量，输出长度为10的向量
-    net.to(device=try_gpu())
+    device = choose_device(no_gpu=True)
+    net.to(device=device)
     # d2l教程p144，重新审视softmax的实现，注意数据的上溢和下溢
     loss = nn.CrossEntropyLoss(reduction='none')
     trainer = torch.optim.SGD(net.parameters(), lr=learning_rate)
     num_epochs = 10
 
-    train(net, train_iter, test_iter, loss, num_epochs, trainer)
+    train(net, train_iter, test_iter, loss, num_epochs, trainer, device)
+'''
+over>>train_loss:0.4477
+train_acc:0.8474
+test_acc:0.8262
+'''
