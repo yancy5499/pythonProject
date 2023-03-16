@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\com\yancy\d2l_learn\data\kaggle_house_pred_test.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\com\yancy\d2l_learn\data\kaggle_house_pred_train.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
