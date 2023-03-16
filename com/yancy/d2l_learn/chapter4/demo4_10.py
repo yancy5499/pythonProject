@@ -74,6 +74,7 @@ def k_fold(k, X_train, y_train, num_epochs, learning_rate, weight_decay, batch_s
         if i == 0:
             plt.figure()
             plt.xlabel('epoch')
+            plt.ylabel('rmse')
             plt.yscale('log')
             x_values = list(range(1, num_epochs + 1))
             plt.plot(x_values, torch.tensor(train_ls), label='train_ls')
@@ -82,6 +83,27 @@ def k_fold(k, X_train, y_train, num_epochs, learning_rate, weight_decay, batch_s
             plt.grid()
             plt.show()
     return train_l_sum / k, valid_l_sum / k
+
+
+def train_and_pred(train_features, test_features, train_labels, test_data,
+                   num_epochs, lr, weight_decay, batch_size):
+    net = get_net()
+    train_ls, _ = train(net, train_features, train_labels, None, None,
+                        num_epochs, lr, weight_decay, batch_size)
+    plt.figure()
+    plt.xlabel('epoch')
+    plt.ylabel('log rmse')
+    plt.yscale('log')
+    plt.plot(np.arange(1, num_epochs + 1), torch.tensor(train_ls))
+    plt.grid()
+    plt.show()
+    print(f'训练log rmse：{float(train_ls[-1]):f}')
+    # 将⽹络应⽤于测试集。
+    preds = net(test_features).detach().numpy()
+    # 将其重新格式化以导出到Kaggle
+    test_data['SalePrice'] = pd.Series(preds.reshape(1, -1)[0])
+    submission = pd.concat([test_data['Id'], test_data['SalePrice']], axis=1)
+    submission.to_csv('submission.csv', index=False)
 
 
 if __name__ == '__main__':
@@ -122,7 +144,9 @@ if __name__ == '__main__':
     loss = nn.MSELoss()
     # 输入特征的数量,每一行作为一个样本，列数为特征数量
     in_features = train_features.shape[1]
-    k, num_epochs, lr, weight_decay, batch_size = 5, 100, 5, 0, 64
+    k, num_epochs, lr, weight_decay, batch_size = 5, 200, 5, 0.09, 64
     train_l, valid_l = k_fold(k, train_features, train_labels, num_epochs, lr, weight_decay, batch_size)
     print('{}-折,平均训练log rmse {:.5f},平均验证log rmse {:.5f}'
           .format(k, train_l, valid_l))
+    # train_and_pred(train_features, test_features, train_labels, test_data,
+    #                num_epochs, lr, weight_decay, batch_size)
