@@ -40,6 +40,7 @@ print('=' * 10)
 # ==========
 # 一次性查看整个网络的参数
 print(*[(name, param.shape) for name, param in net.named_parameters()])
+
 print('=' * 10)
 print(net.state_dict())
 # name='i.weight'可用于索引
