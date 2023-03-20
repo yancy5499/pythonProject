@@ -103,6 +103,7 @@ if __name__ == '__main__':
         X = layer(X)
         print(layer.__class__.__name__, 'output shape:\t', X.shape)
     print('=' * 10)
+
     batch_size = 256
     train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size=batch_size)
     lr, num_epochs = 0.9, 10
