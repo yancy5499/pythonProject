@@ -28,7 +28,7 @@ def train(lambd):
     num_epochs, lr = 100, 0.003
     # =====画图相关=====
     fig = plt.figure()
-    x_values = np.linspace(1, num_epochs + 1, num_epochs)
+    x_values = np.linspace(1, num_epochs, num_epochs)
     my_plot = MyPlot(fig, x_values)
     # =====画图相关=====
     for epoch in range(num_epochs):
@@ -60,7 +60,7 @@ def train_concise(wd):
                               lr=lr)
     # =====画图相关=====
     fig = plt.figure()
-    x_values = np.linspace(1, num_epochs + 1, num_epochs)
+    x_values = np.linspace(1, num_epochs, num_epochs)
     my_plot = MyPlot(fig, x_values)
     # =====画图相关=====
     for epoch in range(num_epochs):

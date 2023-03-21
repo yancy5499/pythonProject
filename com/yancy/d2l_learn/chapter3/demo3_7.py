@@ -98,7 +98,7 @@ def train_epoch(net, train_iter, loss, updater, device):
 def train(net, train_iter, test_iter, loss, num_epochs, updater, device=torch.device('cpu')):
     # =====画图相关=====
     fig = plt.figure()
-    x_values = np.linspace(1, num_epochs + 1, num_epochs)
+    x_values = np.linspace(1, num_epochs, num_epochs)
     my_plot = MyPlot(fig, x_values)
     # =====画图相关=====
     """训练模型"""

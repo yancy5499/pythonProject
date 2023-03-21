@@ -1,9 +1,9 @@
-import torch
-import numpy as np
-from torch import nn
-from d2l import torch as d2l
-from com.yancy.d2l_learn.chapter3.demo3_7 import MyPlot
 import matplotlib.pyplot as plt
+import torch
+from d2l import torch as d2l
+from torch import nn
+
+from com.yancy.d2l_learn.chapter3.demo3_7 import MyPlot
 
 '''
 卷积神经网络LeNet尝鲜
@@ -43,7 +43,7 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
     loss = nn.CrossEntropyLoss()
     # =====画图相关=====
     fig = plt.figure()
-    x_values = np.linspace(1, num_epochs + 1, num_epochs)
+    x_values = torch.linspace(1, num_epochs, num_epochs)  # torch和numpy的linspace均可
     my_plot = MyPlot(fig, x_values)
     # =====画图相关=====
     timer, num_batches = d2l.Timer(), len(train_iter)
@@ -79,25 +79,31 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
 
 
 if __name__ == '__main__':
+    pooling_Layer = nn.AvgPool2d(kernel_size=2, stride=2)
+    # pooling_Layer = nn.MaxPool2d(kernel_size=2, stride=2)
+    activation_Layer = nn.Sigmoid()
+    # activation_Layer = nn.ReLU()
+
     net = nn.Sequential(
-        nn.Conv2d(1, 6, kernel_size=5, padding=2),
-        nn.Sigmoid(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
+        nn.Conv2d(1, 6, kernel_size=7, padding=2),
+        activation_Layer,
+        pooling_Layer,
 
-        nn.Conv2d(6, 16, kernel_size=5),
-        nn.Sigmoid(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
+        nn.Conv2d(6, 16, kernel_size=3),
+        activation_Layer,
+        pooling_Layer,
 
-        nn.Flatten(),  # 图像平铺，准备进行MLP
+        nn.Flatten(),  # 图像平铺，准备进行MLP，检查平铺后元素是多少，从而修改下一层的输入数量
 
         nn.Linear(16 * 5 * 5, 120),
-        nn.Sigmoid(),
+        activation_Layer,
 
         nn.Linear(120, 84),
-        nn.Sigmoid(),
+        activation_Layer,
 
         nn.Linear(84, 10)
     )
+
     X = torch.rand((1, 1, 28, 28), dtype=torch.float32)
     for layer in net:
         X = layer(X)
@@ -106,5 +112,5 @@ if __name__ == '__main__':
 
     batch_size = 256
     train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size=batch_size)
-    lr, num_epochs = 0.9, 10
+    lr, num_epochs = 0.8, 16
     train_ch6(net, train_iter, test_iter, num_epochs, lr, d2l.try_gpu())
