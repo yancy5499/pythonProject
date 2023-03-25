@@ -137,6 +137,7 @@ class MyPlot:
 
     def show(self, labels=None):
         for i in range(len(self.y_dic)):
+            # 是否将结点画出来
             plt.scatter(self.x_values, self.y_dic[i])
             if type(labels) == list:
                 plt.plot(self.x_values, self.y_dic[i], label=labels[i])
