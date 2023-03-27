@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="\com\yancy\d2l_learn\chapter4\submission.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\com\yancy\d2l_learn\data\house_tiny.csv">
           <value>
             <Attribute>
