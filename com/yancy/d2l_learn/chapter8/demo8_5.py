@@ -3,6 +3,8 @@ import math
 from torch import nn
 from torch.nn import functional as F
 from d2l import torch as d2l
+from com.yancy.d2l_learn.chapter3.demo3_7 import MyPlot
+import matplotlib.pyplot as plt
 
 '''
 RNN从零实现
@@ -133,7 +135,10 @@ def train_ch8(net, train_iter, vocab, lr, num_epochs, device,
               use_random_iter=False):
     loss = nn.CrossEntropyLoss()
     # =====画图=====
-    # ToDo
+    fig = plt.figure()
+    x_values = torch.linspace(1, num_epochs, num_epochs)
+    my_plot = MyPlot(fig, x_values)
+    # =====画图=====
     if isinstance(net, nn.Module):
         updater = torch.optim.SGD(net.parameters(), lr)
     else:
@@ -146,9 +151,15 @@ def train_ch8(net, train_iter, vocab, lr, num_epochs, device,
         if (epoch + 1) % 10 == 0:
             print('\r[{:.2f}%]{}'.format((epoch + 1) / num_epochs * 100,
                                          predict('time traveller')), end='')
+        # =====画图=====
+        my_plot.add_y(ppl)
+        # =====画图=====
     print(f'\n困惑度 {ppl:.1f}, {speed:.1f} 词元/秒 {str(device)}')
     print(predict('time traveller'))
     print(predict('traveller'))
+    # =====画图=====
+    my_plot.show(labels='perplexity')
+    # =====画图=====
 
 
 def test():

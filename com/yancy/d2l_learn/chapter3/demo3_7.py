@@ -135,10 +135,11 @@ class MyPlot:
                 self.y_dic[i] = []
             self.y_dic[i].append(y_values[i])
 
-    def show(self, labels=None):
+    def show(self, labels=None,show_scatter=False):
         for i in range(len(self.y_dic)):
-            # 是否将结点画出来
-            plt.scatter(self.x_values, self.y_dic[i])
+            if show_scatter:
+                # 是否将结点画出来
+                plt.scatter(self.x_values, self.y_dic[i])
             if type(labels) == list:
                 plt.plot(self.x_values, self.y_dic[i], label=labels[i])
                 plt.legend()
