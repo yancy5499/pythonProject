@@ -136,6 +136,8 @@ def train_ch8(net, train_iter, vocab, lr, num_epochs, device,
     loss = nn.CrossEntropyLoss()
     # =====画图=====
     fig = plt.figure()
+    plt.ylabel('perplexity')
+    plt.xlabel('epoch')
     x_values = torch.linspace(1, num_epochs, num_epochs)
     my_plot = MyPlot(fig, x_values)
     # =====画图=====
@@ -158,7 +160,7 @@ def train_ch8(net, train_iter, vocab, lr, num_epochs, device,
     print(predict('time traveller'))
     print(predict('traveller'))
     # =====画图=====
-    my_plot.show(labels='perplexity')
+    my_plot.show(labels=['train'])
     # =====画图=====
 
 
@@ -197,3 +199,8 @@ if __name__ == '__main__':
     print(predict_ch8('time traveller ', 10, net, vocab, device))
     print('=' * 10)
     test_all(use_random_iter=True)
+'''
+困惑度 1.4, 119998.7 词元/秒 cuda:0
+time traveller proceeded anyreal body must have extension in fou
+travellerit would be remarkably convenient for the historia
+'''
