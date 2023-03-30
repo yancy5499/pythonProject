@@ -28,9 +28,11 @@ class NWKernelRegression(nn.Module):
 
     def forward(self, q, k, v):
         q = q.repeat_interleave(k.shape[1]).reshape(-1, k.shape[1])
+        # query与keys做距离运算得到注意力权重
         self.attention_weights = nn.functional.softmax(
             -((q - k) * self.w) ** 2 / 2, dim=1
         )
+        # 注意力权重与values按batch矩阵乘法得到输出
         return torch.bmm(self.attention_weights.unsqueeze(1),
                          v.unsqueeze(-1)).reshape(-1)
 
@@ -94,10 +96,10 @@ if __name__ == '__main__':
         trainer.step()
         print(f'epoch {epoch + 1}, loss {float(l.sum()):.6f}')
     # 估计
-    query = x_test
+    queries = x_test
     keys = x_train.repeat((len(x_test), 1))
     values = y_train.repeat((len(x_test), 1))
-    y_hat = net(query, keys, values).unsqueeze(1).detach()
+    y_hat = net(queries, keys, values).unsqueeze(1).detach()
     plot_kernel_reg(x_train, y_train, x_test, y_truth, y_hat)
     d2l.show_heatmaps(net.attention_weights.unsqueeze(0).unsqueeze(0),
                       xlabel='Sorted training inputs',
