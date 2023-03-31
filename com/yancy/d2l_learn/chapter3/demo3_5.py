@@ -41,7 +41,7 @@ def show_images(imgs, num_rows, num_cols, titles=None, scales=1.5):
     axes = axes.flatten()  # 数组扁平化
     for i, (axe, img) in enumerate(zip(axes, imgs)):
         # zip将axes和imgs打包成一个元组，然后enumerate给元组添加索引，并生成一个迭代器
-        # 输出一个变量形如(i,(axe,img)),在此for循环中直接用三个变量接收
+        # 输出一个变量形如(i,(axe,imgs)),在此for循环中直接用三个变量接收
         if torch.is_tensor(img):
             # 若img是图片张量，则用对应的方法将其输出成图片
             axe.imshow(img.numpy())
