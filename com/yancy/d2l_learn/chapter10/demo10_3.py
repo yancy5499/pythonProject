@@ -48,14 +48,14 @@ class AdditiveAttention(nn.Module):
     def forward(self, q, k, v, valid_lens):
         q, k = self.W_q(q), self.W_k(k)
         # 为了广播计算后控制feature的形状
-        # q升维成(batch_size, q_len, 1, num_hiddens)
-        # k升维成(batch_size, 1, kv_len, num_hiddens)
+        # q升维成(batch_size, num_q, 1, num_hiddens)
+        # k升维成(batch_size, 1, num_kv, num_hiddens)
         features = q.unsqueeze(2) + k.unsqueeze(1)
-        # features的形状为(batch_size, q_len, kv_len, num_hiddens)
+        # features的形状为(batch_size, num_q, num_kv, num_hiddens)
         # print(features.shape)
         # features = torch.tanh(features)
         # 消除最后一个维度
-        # scores形状: (batch_size, q_len, kv_len)
+        # scores形状: (batch_size, num_q, num_kv)
         scores = self.w_v(features).squeeze(-1)
         self.attention_weights = masked_softmax(scores, valid_lens)
         # v的形状: (batch_size, num_kv, dim_v)
@@ -94,13 +94,13 @@ if __name__ == '__main__':
     print('=' * 10)
     # =====加性注意力(qk可不同长度)=====
     # 评分函数a(q,k) = w_v.T@tanh(W_q@q + W_k@k)
-    # q_len=1, query_size=20
-    # k_len=10, key_size=2, 其中qkv_len可解释为步数或词元序列长度
+    # num_q=1, query_size=20
+    # num_k=10, key_size=2, 其中num_qkv可解释为步数或词元序列长度
     queries = torch.normal(0, 1, (2, 1, 20))
     keys = torch.ones((2, 10, 2))
     # 修改keys值
     # keys[:, :3, 0] = 0
-    # values形状(2,10,4), k_len=v_len, 在0轴处重复了两次
+    # values形状(2,10,4), num_k=num_v, 在0轴处重复了两次
     values = torch.arange(40, dtype=torch.float32).reshape(1, 10, 4).repeat(2, 1, 1)
     valid_lens = torch.tensor([2, 6])
     attention = AdditiveAttention(key_size=2, query_size=20, num_hiddens=8,
