@@ -29,6 +29,8 @@ class PositionWiseFFN(nn.Module):
 class AddNorm(nn.Module):
     """残差连接后进行层规范化"""
 
+    # 由于nlp中输入序列总会变化，LN的效果比BN好
+
     def __init__(self, normalized_shape, dropout, **kwargs):
         super(AddNorm, self).__init__(**kwargs)
         self.dropout = nn.Dropout(dropout)
