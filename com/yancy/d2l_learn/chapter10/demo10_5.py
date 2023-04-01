@@ -41,7 +41,7 @@ class MultiHeadAttention(nn.Module):
         # q: (batch_size, num_q, num_hiddens)
         # k,v: (batch_size, num_kv, num_hiddens)
         # valid_lens: (batch_size,) or (batch_size, num_q)
-        # 变换后: (batch_size*num_heads, qnum_kv, num_hiddens/num_heads)
+        # 变换后: (batch_size*num_heads, num_qkv, num_hiddens/num_heads)
         q = transpose_qkv(self.W_q(q), self.num_heads)
         k = transpose_qkv(self.W_k(k), self.num_heads)
         v = transpose_qkv(self.W_v(v), self.num_heads)
