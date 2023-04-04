@@ -124,7 +124,9 @@ def train(net, train_iter, test_iter, loss, num_epochs, updater, device=torch.de
 class MyPlot:
     """画图类"""
 
-    def __init__(self, figure, x_values):
+    def __init__(self, figure, x_values=None):
+        if x_values is None:
+            x_values = []
         self.figure = figure
         self.x_values = x_values
         self.y_dic = {}
@@ -134,6 +136,10 @@ class MyPlot:
             if self.y_dic.get(i) is None:
                 self.y_dic[i] = []
             self.y_dic[i].append(y_values[i])
+
+    def add_xy(self, x_value, *y_values):
+        self.x_values.append(x_value)
+        self.add_y(*y_values)
 
     def show(self, labels=None, show_scatter=False):
         for i in range(len(self.y_dic)):
