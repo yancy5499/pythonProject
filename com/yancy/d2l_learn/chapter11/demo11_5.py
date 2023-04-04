@@ -59,7 +59,7 @@ def train_ch11(trainer_fn, states, hyperparams, data_iter,
         batch = 0
         for X, y in data_iter:
             batch += 1
-            print('\repoch{} ing...[batch{}]'.format(epoch + 1, batch), end='')
+            print('\repoch[{}/{}] ing...[batch{}]'.format(epoch + 1, num_epochs, batch), end='')
             l = loss(net(X), y).mean()
             l.backward()
             trainer_fn([w, b], states, hyperparams)
@@ -90,9 +90,12 @@ def train_concise_ch11(trainer_fn, hyperparams, data_iter, num_epochs=4):
     myplot = demo3_7.MyPlot(fig, x_values)
     # =====画图=====
     n, timer = 0, d2l.Timer()
-    for _ in range(num_epochs):
+    for epoch in range(num_epochs):
         timer.start()
+        batch = 0
         for X, y in data_iter:
+            batch += 1
+            print('\repoch[{}/{}] ing...[batch{}]'.format(epoch + 1, num_epochs, batch), end='')
             optimizer.zero_grad()
             out = net(X)
             y = y.reshape(out.shape)
@@ -105,7 +108,7 @@ def train_concise_ch11(trainer_fn, hyperparams, data_iter, num_epochs=4):
             myplot.add_y(d2l.evaluate_loss(net, data_iter, loss) / 2)
             # =====画图=====
         timer.stop()
-    print(f'loss: {myplot.y_dic[0][-1]:.3f}, {timer.avg():.3f} sec/epoch')
+    print(f'\nloss: {myplot.y_dic[0][-1]:.3f}, {timer.avg():.3f} sec/epoch')
     myplot.show()
 
 
