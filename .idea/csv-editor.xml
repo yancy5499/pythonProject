@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\com\yancy\d2l_learn\data\banana-detection\bananas_train\label.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\com\yancy\d2l_learn\data\banana-detection\bananas_val\label.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\com\yancy\d2l_learn\data\house_tiny.csv">
           <value>
             <Attribute>
