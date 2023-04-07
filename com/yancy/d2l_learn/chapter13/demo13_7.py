@@ -36,7 +36,7 @@ def concat_preds(preds):
 
 
 def down_sample_blk(out_channels):
-    # 将输入的特征图高宽减半
+    # 将输入的特征图高宽减半(类似VGG的block)
     blk = []
     for _ in range(2):
         # 不改变形状
